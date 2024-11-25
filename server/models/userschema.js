@@ -12,10 +12,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,   // Ensures a clean display name
     },
-    dob: {
-        type: Date,
-        required: true, // Ensures every user has a date of birth
-    },
     mail: {
         type: String,
         required: true,
@@ -33,7 +29,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true, // Ensures a password is provided
-        minlength: 8,   // Enforces a minimum length for security
+        minlength: 3,   // Enforces a minimum length for security
     }
 }, {
     timestamps: true // Adds `createdAt` and `updatedAt` fields automatically

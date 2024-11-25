@@ -3,10 +3,28 @@ import Community from '../models/communitySchema.js';
 import User from '../models/userschema.js';
 
 /**
- * @desc Create a new post
- * @route POST /posts
- * @access Authenticated users only
+ * @desc Get a single post by its ID
+ * @route GET /posts/:id
+ * @access Public
  */
+export const getPostById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const post = await Post.findById(id)
+            .populate('author', 'username displayname')
+            .populate('community', 'name description');
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        res.status(200).json({ post });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
 /**
  * @desc Create a new post
  * @route POST /posts

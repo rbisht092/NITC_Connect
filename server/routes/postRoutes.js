@@ -7,6 +7,7 @@ import {
     getPostsByCommunity,
     getPostsByUser,
     deletePost,
+    getPostById,
 } from '../controllers/postControllers.js';
 import authMiddleware  from '../middleware/authMiddleware.js'; // Ensure this middleware checks for authenticated users
 
@@ -32,5 +33,7 @@ postRouter.get('/users/:userId', getPostsByUser);
 
 // Route to delete a post
 postRouter.delete('/:id', authMiddleware, deletePost);
+
+postRouter.get("/:id",getPostById);
 
 export default postRouter;

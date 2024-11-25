@@ -6,10 +6,13 @@ import authRoutes from './routes/authRoutes.js';
 import communityRouter from "./routes/communityRoutes.js";
 import joinRouter from "./routes/joinRoutes.js"
 import postRouter from "./routes/postRoutes.js";
+import cors from "cors"
 const app = express();
 
 dotenv.config();
-
+app.use(cors({
+  origin:"*"
+}))
 
 app.use(express.json());
 app.use(cookieParser());

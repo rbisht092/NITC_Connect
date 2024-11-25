@@ -5,15 +5,17 @@ import User from '../models/userschema.js';
 const JWT_SECRET= process.env.JWT_SECRET
 
 const signup = async (req, res) => {
-    const { username, displayname, dob, mail, password } = req.body;
-
+    const { username, displayname, mail, password } = req.body;
+    if(!username|| !displayname|| !mail || !password){
+        return res.status(400).json({message: "all fields are required"})
+    }
     try {
         const existingUser = await User.findOne({ mail });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already in use' });
         }
 
-        const user = await User.create({ username, displayname, dob, mail, password });
+        const user = await User.create({ username, displayname, mail, password });
         
         res.status(201).json(user);
     } catch (error) {
@@ -37,7 +39,7 @@ const login = async (req, res) => {
         }
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
         res.cookie('authToken', token, { httpOnly: true, maxAge: 3600000 });
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', token, user });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
