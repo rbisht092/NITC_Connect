@@ -8,6 +8,7 @@ import {
     getPostsByUser,
     deletePost,
     getPostById,
+    getFollowedPosts
 } from '../controllers/postControllers.js';
 import authMiddleware  from '../middleware/authMiddleware.js'; // Ensure this middleware checks for authenticated users
 
@@ -35,5 +36,8 @@ postRouter.get('/users/:userId', getPostsByUser);
 postRouter.delete('/:id', authMiddleware, deletePost);
 
 postRouter.get("/:id",getPostById);
+
+postRouter.get("/followed-posts/:userId",authMiddleware, getFollowedPosts  )
+
 
 export default postRouter;

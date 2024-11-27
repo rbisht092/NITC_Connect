@@ -1,7 +1,7 @@
 import Post from '../models/postSchema.js';
 import Community from '../models/communitySchema.js';
 import User from '../models/userschema.js';
-
+import Follows from '../models/followsSchema.js';
 /**
  * @desc Get a single post by its ID
  * @route GET /posts/:id
@@ -12,8 +12,8 @@ export const getPostById = async (req, res) => {
 
     try {
         const post = await Post.findById(id)
-            .populate('author', 'username displayname')
-            .populate('community', 'name description');
+            .populate('author', 'username displayname image')
+            .populate('community', 'name description').populate("comments.user", "username");
 
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
@@ -56,7 +56,6 @@ export const createPost = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 
 /**
  * @desc Edit an existing post
@@ -168,7 +167,7 @@ export const getPostsByCommunity = async (req, res) => {
     const { communityId } = req.params;
 
     try {
-        const posts = await Post.find({ community: communityId }).populate('author', 'username displayname');
+        const posts = await Post.find({ community: communityId }).populate('author', 'username displayname').populate("community","name");
 
         if (!posts.length) {
             return res.status(404).json({ message: 'No posts found in this community' });
@@ -181,6 +180,26 @@ export const getPostsByCommunity = async (req, res) => {
     }
 };
 
+export const getFollowedPosts = async(req,res)=>{
+    const { userId } = req.params;
+
+    try {
+        // Fetch the communities followed by the user
+        const follows = await Follows.find({ userId }).select('communityId');
+        const communityIds = follows.map((follow) => follow.communityId);
+
+        // Fetch posts from these communities
+        const posts = await Post.find({ community: { $in: communityIds } })
+            .populate('author', 'username displayname') // Populate author details
+            .populate('community', 'name') // Populate community details
+            .sort({ createdAt: -1 }); // Sort posts by newest first
+
+        res.status(200).json({ posts });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ error: 'An error occurred while fetching posts.' });
+    }
+}
 /**
  * @desc Get all posts by a user
  * @route GET /users/:userId/posts
@@ -188,7 +207,7 @@ export const getPostsByCommunity = async (req, res) => {
  */
 export const getPostsByUser = async (req, res) => {
     const { userId } = req.params;
-
+    console.log(userId)
     try {
         const posts = await Post.find({ author: userId }).populate('community', 'name description');
 
@@ -205,6 +224,7 @@ export const getPostsByUser = async (req, res) => {
 export const deletePost = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
+    console.log(id)
 
     try {
         const post = await Post.findById(id);
@@ -217,7 +237,7 @@ export const deletePost = async (req, res) => {
             return res.status(403).json({ error: 'You are not authorized to delete this post' });
         }
 
-        await post.remove();
+        await Post.findOneAndDelete({_id:id});
 
         res.status(200).json({ message: 'Post deleted successfully' });
     } catch (error) {

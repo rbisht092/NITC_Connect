@@ -4,6 +4,28 @@ import Follows from '../models/followsSchema.js';
  * Create a new community
  * @route POST /communities
  */
+export const search= async(req, res) => {
+    try {
+        const { query } = req.query; // Extract the search query from the URL
+
+        if (!query) {
+            return res.status(400).json({ message: 'Search query is required' });
+        }
+
+        // Find communities using text search
+        const results = await Community.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } }, // Case-insensitive regex
+                { description: { $regex: query, $options: 'i' } },
+            ],
+        });
+
+        res.status(200).json({ data: results });
+    } catch (error) {
+        console.error('Error searching communities:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 export const createCommunity = async (req, res) => {
     const { name, description } = req.body;
 

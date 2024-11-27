@@ -5,7 +5,8 @@ const JWT_SECRET = process.env.JWT_SECRET; // Use your securely generated secret
 const authMiddleware = (req, res, next) => {
     try {
         // Extract token from cookies or authorization header
-        const token = req.cookies.authToken
+        const {token} = req.headers
+        
 
         if (!token) {
             return res.status(401).json({ error: 'Authentication required' });

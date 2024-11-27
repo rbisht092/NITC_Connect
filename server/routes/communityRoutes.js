@@ -4,6 +4,7 @@ import {
     getCommunityById,
     getAllCommunities,
     updateCommunity,
+    search
 
 } from '../controllers/communityControllers.js';
 import authMiddleware from '../middleware/authMiddleware.js';
@@ -15,6 +16,7 @@ communityRouter.post('/', authMiddleware, createCommunity);
 
 communityRouter.get('/', getAllCommunities);
 
+communityRouter.get('/', search);
 
 communityRouter.get('/:id', getCommunityById);
 

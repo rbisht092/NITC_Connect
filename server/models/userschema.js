@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true, // Ensures a password is provided
         minlength: 3,   // Enforces a minimum length for security
+    },
+    image:
+    {
+        type: String,
+        default:"https://i.pinimg.com/736x/ff/5c/ad/ff5cadc500d73db234f4240f7ca53aa1.jpg"
     }
 }, {
     timestamps: true // Adds `createdAt` and `updatedAt` fields automatically

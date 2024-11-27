@@ -5,7 +5,7 @@ import User from '../models/userschema.js';
 const JWT_SECRET= process.env.JWT_SECRET
 
 const signup = async (req, res) => {
-    const { username, displayname, mail, password } = req.body;
+    const { username, displayname, mail, password, image } = req.body;
     if(!username|| !displayname|| !mail || !password){
         return res.status(400).json({message: "all fields are required"})
     }
@@ -15,9 +15,9 @@ const signup = async (req, res) => {
             return res.status(400).json({ error: 'Email already in use' });
         }
 
-        const user = await User.create({ username, displayname, mail, password });
+        const user = await User.create({ username, displayname, mail, password, image });
         
-        res.status(201).json(user);
+        res.status(201).json({success: true, message: "user registered"});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
